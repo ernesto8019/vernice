@@ -1,15 +1,22 @@
 {
-  "short_name": "VerniceApp",
-  "name": "Calcolatore Vernice Professionale",
-  "icons": [
-    {
-      "src": "logo.png",
-      "sizes": "192x192",
-      "type": "image/png"
-    }
-  ],
+  "short_name": "PaintCalc",
+  "name": "PaintCalc - Calcolatore Vernice",
+  "description": "Calcola rapidamente i litri di vernice necessari per la tua attività.",
   "start_url": "./index.html",
   "display": "standalone",
+  "orientation": "portrait",
   "background_color": "#121212",
-  "theme_color": "#00d1b2"
+  "theme_color": "#00d1b2",
+  "icons": [
+    {
+      "src": "https://via.placeholder.com/192x192/00d1b2/ffffff?text=P",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "https://via.placeholder.com/512x512/00d1b2/ffffff?text=PaintCalc",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
 }
