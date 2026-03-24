@@ -16,7 +16,6 @@
         .btn.active { background: #00d1b2; color: #121212; }
         label { display: block; text-align: left; margin-top: 15px; color: #aaa; font-size: 11px; text-transform: uppercase; letter-spacing: 1px; }
         input, select { width: 100%; padding: 12px; margin-top: 5px; border-radius: 8px; border: none; background: #333; color: white; box-sizing: border-box; font-size: 16px; outline: none; -webkit-appearance: none; }
-        
         .switch-container { display: flex; align-items: center; justify-content: space-between; margin-top: 20px; padding: 10px; background: #2a2a2a; border-radius: 10px; }
         .switch { position: relative; display: inline-block; width: 40px; height: 20px; }
         .switch input { opacity: 0; width: 0; height: 0; }
@@ -24,11 +23,9 @@
         .slider:before { position: absolute; content: ""; height: 14px; width: 14px; left: 3px; bottom: 3px; background-color: white; transition: .4s; border-radius: 50%; }
         input:checked + .slider { background-color: #00d1b2; }
         input:checked + .slider:before { transform: translateX(20px); }
-        
         .result-box { margin-top: 25px; background: #00d1b2; color: #121212; padding: 15px; border-radius: 15px; min-height: 80px; display: flex; flex-direction: column; justify-content: center; }
         .result-val { font-size: 2.1em; font-weight: bold; display: block; }
         .pack-val { font-size: 1.1em; font-weight: bold; display: block; margin-top: 8px; border-top: 1px solid rgba(0,0,0,0.1); padding-top: 8px; color: #004d40; }
-        
         .footer { margin-top: 25px; padding-top: 15px; border-top: 1px solid #333; }
         .footer a { color: #00d1b2; text-decoration: none; font-weight: bold; font-size: 14px; }
         .hidden { display: none !important; }
@@ -61,8 +58,8 @@
         </optgroup>
         <optgroup label="EDILIZIA">
             <option value="0.12" data-unit="LT" data-cat="EDILIZIA">Smalto 3 Archi (0.12 lt/mq)</option>
-            <option value="0.142" data-unit="LT" data-cat="EDILIZIA">Trasp. Eko (0.14 lt/mq)</option>
-            <option value="0.142" data-unit="LT" data-cat="EDILIZIA">Trasp. Fiorella (0.14 lt/mq)</option>
+            <option value="0.10" data-unit="LT" data-cat="EDILIZIA">Trasp. Eko (0.10 lt/mq)</option>
+            <option value="0.10" data-unit="LT" data-cat="EDILIZIA">Trasp. Fiorella (0.10 lt/mq)</option>
             <option value="0.14" data-unit="LT" data-cat="EDILIZIA">Lav. Int. Bravo (0.14 lt/mq)</option>
             <option value="0.14" data-unit="LT" data-cat="EDILIZIA">Lav. Est. Bellissima (0.14 lt/mq)</option>
             <option value="0.30" data-unit="KG" data-cat="EDILIZIA">Murosil (0.30 kg/mq)</option>
@@ -78,7 +75,7 @@
     </div>
 
     <div id="customResaBox" class="hidden">
-        <label>NUOVO CONSUMO (kg o lt / mq):</label>
+        <label>NUOVO CONSUMO (valore / mq):</label>
         <input type="number" id="customResa" step="0.01" placeholder="es. 0.35" inputmode="decimal" oninput="calcola()">
     </div>
 
@@ -122,19 +119,17 @@
         calcola();
     }
 
-    // Nuova funzione per gestire la visibilità del campo MANI e ricalcolare
     function gestisciCampi() {
         var selectProd = document.getElementById('prodotto');
         var selectedOption = selectProd.options[selectProd.selectedIndex];
         var categoria = selectedOption.getAttribute('data-cat');
         var isCustom = document.getElementById('flagResa').checked;
 
-        // Mostra MANI solo se è EDILIZIA e non siamo in modalità manuale
         if (categoria === 'EDILIZIA' && !isCustom) {
             document.getElementById('boxMani').classList.remove('hidden');
         } else {
             document.getElementById('boxMani').classList.add('hidden');
-            document.getElementById('mani').value = 1; // Resetta a 1 se nascosto
+            document.getElementById('mani').value = 1;
         }
         calcola();
     }
@@ -152,14 +147,14 @@
             sel.disabled = false;
             sel.style.opacity = "1";
         }
-        gestisciCampi(); // Aggiorna anche la visibilità del campo mani
+        gestisciCampi();
     }
 
     function calcola() {
         var isCustom = document.getElementById('flagResa').checked;
         var selectProd = document.getElementById('prodotto');
         var consumoMq;
-        var unita = "KG";
+        var unita = "";
         
         var selectedOption = selectProd.options[selectProd.selectedIndex];
         var nomeProdotto = selectedOption.text;
@@ -167,7 +162,7 @@
 
         if (isCustom) {
             consumoMq = parseFloat(document.getElementById('customResa').value) || 0;
-            unita = "KG/LT";
+            unita = "UNITÀ"; 
         } else {
             consumoMq = parseFloat(selectProd.value);
             unita = selectedOption.getAttribute('data-unit');
@@ -197,7 +192,6 @@
         }
     }
 
-    // Avvio iniziale per impostare la visibilità corretta
     window.onload = gestisciCampi;
 </script>
 </body>
