@@ -8,17 +8,28 @@
     <meta name="theme-color" content="#00d1b2">
     <style>
         body { font-family: sans-serif; background: #121212; color: white; padding: 15px; text-align: center; }
-        .container { max-width: 400px; margin: auto; background: #1e1e1e; padding: 20px; border-radius: 20px; border: 1px solid #333; }
-        h2 { color: #00d1b2; margin-bottom: 20px; }
+        .container { max-width: 400px; margin: auto; background: #1e1e1e; padding: 20px; border-radius: 20px; border: 1px solid #333; box-shadow: 0 10px 20px rgba(0,0,0,0.5); }
+        h2 { color: #00d1b2; margin-bottom: 20px; font-weight: 300; }
         .selector { display: flex; background: #333; border-radius: 10px; padding: 5px; margin-bottom: 20px; }
-        .btn { flex: 1; padding: 10px; border: none; background: none; color: #888; cursor: pointer; font-weight: bold; border-radius: 8px; }
+        .btn { flex: 1; padding: 10px; border: none; background: none; color: #888; cursor: pointer; font-weight: bold; border-radius: 8px; transition: 0.3s; }
         .btn.active { background: #00d1b2; color: #121212; }
-        label { display: block; text-align: left; margin-top: 15px; color: #aaa; font-size: 12px; }
-        input, select { width: 100%; padding: 12px; margin-top: 5px; border-radius: 8px; border: none; background: #333; color: white; box-sizing: border-box; font-size: 16px; }
+        label { display: block; text-align: left; margin-top: 15px; color: #aaa; font-size: 11px; text-transform: uppercase; letter-spacing: 1px; }
+        input, select { width: 100%; padding: 12px; margin-top: 5px; border-radius: 8px; border: none; background: #333; color: white; box-sizing: border-box; font-size: 16px; outline: none; }
+        
+        /* Stile per il Flag Cambio Resa */
+        .switch-container { display: flex; align-items: center; justify-content: space-between; margin-top: 20px; padding: 10px; background: #2a2a2a; border-radius: 10px; }
+        .switch { position: relative; display: inline-block; width: 40px; height: 20px; }
+        .switch input { opacity: 0; width: 0; height: 0; }
+        .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #555; transition: .4s; border-radius: 20px; }
+        .slider:before { position: absolute; content: ""; height: 14px; width: 14px; left: 3px; bottom: 3px; background-color: white; transition: .4s; border-radius: 50%; }
+        input:checked + .slider { background-color: #00d1b2; }
+        input:checked + .slider:before { transform: translateX(20px); }
+        
         .result-box { margin-top: 25px; background: #00d1b2; color: #121212; padding: 20px; border-radius: 15px; }
         .result-val { font-size: 2.5em; font-weight: bold; display: block; }
-        .footer { margin-top: 20px; padding-top: 10px; border-top: 1px solid #333; }
-        .footer a { color: #00d1b2; text-decoration: none; font-weight: bold; }
+        .footer { margin-top: 25px; padding-top: 15px; border-top: 1px solid #333; }
+        .footer a { color: #00d1b2; text-decoration: none; font-weight: bold; font-size: 14px; }
+        .hidden { display: none; }
     </style>
 </head>
 <body>
@@ -31,40 +42,53 @@
         <button id="b2" class="btn" onclick="mostra('mq')">MQ Totali</button>
     </div>
 
-    <label>SISTEMA:</label>
+    <label id="labelProdotto">SISTEMA:</label>
     <select id="prodotto" onchange="calcola()">
         <optgroup label="EPOFLOOR">
-            <option value="2.5">Epofloor 810 PRIMER (0,40 kg/mq)</option>
-            <option value="0.5">Epofloor 810 MASSETTO (2 kg/mq)</option>
-            <option value="2.5">Epofloor 830 (0.4 kg/mq)</option>
+            <option value="0.40">Epofloor 810 PRIMER (0.40 kg/mq)</option>
+            <option value="2.00">Epofloor 810 MASSETTO (2.00 kg/mq)</option>
+            <option value="0.40">Epofloor 830 (0.40 kg/mq)</option>
         </optgroup>
         <optgroup label="CERAMIFLOOR">
-            <option value="10">Ceramifloor 900 PRIMER (0.100 kg/mq)</option>
-            <option value="14.2857">Ceramifloor 900 ANTIPOLVERE (0.07 kg/mq)</option>
-            <option value="4">Ceramifloor 910 (0.30 kg/mq)</option>
-            <option value="4">Ceramifloor 920 (0.25 kg/mq)</option>
-            <option value="4">Ceramifloor 930 (0.25 kg/mq)</option>
-            <option value="4">Ceramifloor 940 (0.25 kg/mq)</option>
+            <option value="0.10">Ceramifloor 900 PRIMER (0.10 kg/mq)</option>
+            <option value="0.07">Ceramifloor 900 ANTIPOLVERE (0.07 kg/mq)</option>
+            <option value="0.30">Ceramifloor 910 (0.30 kg/mq)</option>
+            <option value="0.25">Ceramifloor 920 (0.25 kg/mq)</option>
+            <option value="0.25">Ceramifloor 930 (0.25 kg/mq)</option>
+            <option value="0.25">Ceramifloor 940 (0.25 kg/mq)</option>
         </optgroup>
     </select>
 
+    <div class="switch-container">
+        <span style="font-size: 12px; color: #aaa;">PERSONALIZZA CONSUMO (Kg/mq)</span>
+        <label class="switch">
+            <input type="checkbox" id="flagResa" onchange="toggleResa()">
+            <span class="slider"></span>
+        </label>
+    </div>
+
+    <div id="customResaBox" class="hidden">
+        <label>NUOVO CONSUMO (kg/mq):</label>
+        <input type="number" id="customResa" step="0.01" placeholder="es. 0.35" oninput="calcola()">
+    </div>
+
     <div id="areaDims">
         <label>BASE (m):</label>
-        <input type="number" id="base" value="0" oninput="calcola()">
+        <input type="number" id="base" placeholder="0" oninput="calcola()">
         <label>ALTEZZA (m):</label>
-        <input type="number" id="alt" value="0" oninput="calcola()">
+        <input type="number" id="alt" placeholder="0" oninput="calcola()">
     </div>
 
     <div id="areaMq" style="display:none">
         <label>MQ TOTALI:</label>
-        <input type="number" id="mqtot" value="0" oninput="calcola()">
+        <input type="number" id="mqtot" placeholder="0" oninput="calcola()">
     </div>
 
     <label>MANI:</label>
-    <input type="number" id="mani" value="1" oninput="calcola()">
+    <input type="number" id="mani" value="1" min="1" oninput="calcola()">
 
     <div class="result-box">
-        <span style="font-size: 11px; font-weight: bold;">FABBISOGNO TOTALE</span>
+        <span style="font-size: 11px; font-weight: bold; text-transform: uppercase;">Fabbisogno Totale</span>
         <span id="risultato" class="result-val">0.00 KG</span>
     </div>
 
@@ -85,8 +109,36 @@
         calcola();
     }
 
+    function toggleResa() {
+        var isCustom = document.getElementById('flagResa').checked;
+        var box = document.getElementById('customResaBox');
+        var sel = document.getElementById('prodotto');
+        var lab = document.getElementById('labelProdotto');
+
+        if (isCustom) {
+            box.classList.remove('hidden');
+            sel.disabled = true;
+            sel.style.opacity = "0.3";
+            lab.style.opacity = "0.3";
+        } else {
+            box.classList.add('hidden');
+            sel.disabled = false;
+            sel.style.opacity = "1";
+            lab.style.opacity = "1";
+        }
+        calcola();
+    }
+
     function calcola() {
-        var resa = parseFloat(document.getElementById('prodotto').value);
+        var isCustom = document.getElementById('flagResa').checked;
+        var consumoMq;
+
+        if (isCustom) {
+            consumoMq = parseFloat(document.getElementById('customResa').value) || 0;
+        } else {
+            consumoMq = parseFloat(document.getElementById('prodotto').value);
+        }
+
         var nmani = parseFloat(document.getElementById('mani').value) || 0;
         var mq = 0;
 
@@ -98,7 +150,7 @@
             mq = parseFloat(document.getElementById('mqtot').value) || 0;
         }
 
-        var res = (mq * nmani) / resa;
+        var res = mq * nmani * consumoMq;
         document.getElementById('risultato').innerText = res.toFixed(2) + " KG";
     }
 </script>
