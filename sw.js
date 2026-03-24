@@ -1,7 +1,7 @@
 self.addEventListener('install', (e) => {
-  console.log('Service Worker Installato');
+  self.skipWaiting();
 });
-
+navigator.serviceWorker.register('./sw.js');
 self.addEventListener('fetch', (e) => {
   e.respondWith(fetch(e.request));
 });
