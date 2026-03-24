@@ -2,19 +2,20 @@
 <html lang="it">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>PaintCalc Pro</title>
     <link rel="manifest" href="./manifest.json">
+    <link rel="apple-touch-icon" href="https://cdn-icons-png.flaticon.com/512/3593/3593594.png">
     <meta name="theme-color" content="#00d1b2">
     <style>
-        body { font-family: sans-serif; background: #121212; color: white; padding: 15px; text-align: center; }
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; background: #121212; color: white; padding: 15px; text-align: center; }
         .container { max-width: 400px; margin: auto; background: #1e1e1e; padding: 20px; border-radius: 20px; border: 1px solid #333; box-shadow: 0 10px 20px rgba(0,0,0,0.5); }
         h2 { color: #00d1b2; margin-bottom: 20px; font-weight: 300; }
         .selector { display: flex; background: #333; border-radius: 10px; padding: 5px; margin-bottom: 20px; }
-        .btn { flex: 1; padding: 10px; border: none; background: none; color: #888; cursor: pointer; font-weight: bold; border-radius: 8px; transition: 0.3s; }
+        .btn { flex: 1; padding: 12px; border: none; background: none; color: #888; cursor: pointer; font-weight: bold; border-radius: 8px; transition: 0.3s; font-size: 14px; }
         .btn.active { background: #00d1b2; color: #121212; }
         label { display: block; text-align: left; margin-top: 15px; color: #aaa; font-size: 11px; text-transform: uppercase; letter-spacing: 1px; }
-        input, select { width: 100%; padding: 12px; margin-top: 5px; border-radius: 8px; border: none; background: #333; color: white; box-sizing: border-box; font-size: 16px; outline: none; }
+        input, select { width: 100%; padding: 12px; margin-top: 5px; border-radius: 8px; border: none; background: #333; color: white; box-sizing: border-box; font-size: 16px; outline: none; -webkit-appearance: none; }
         
         .switch-container { display: flex; align-items: center; justify-content: space-between; margin-top: 20px; padding: 10px; background: #2a2a2a; border-radius: 10px; }
         .switch { position: relative; display: inline-block; width: 40px; height: 20px; }
@@ -43,12 +44,12 @@
         <button id="b2" class="btn" onclick="mostra('mq')">MQ Totali</button>
     </div>
 
-    <label id="labelProdotto">SISTEMA:</label>
+    <label id="labelProdotto">SISTEMA / PRODOTTO:</label>
     <select id="prodotto" onchange="calcola()">
         <optgroup label="EPOFLOOR">
             <option value="0.40">Epofloor 810 PRIMER (0.40 kg/mq)</option>
             <option value="2.00">Epofloor 810 MASSETTO (2.00 kg/mq)</option>
-            <option value="0.40" id="target830">Epofloor 830 (0.40 kg/mq)</option>
+            <option value="0.40">Epofloor 830 (0.40 kg/mq)</option>
         </optgroup>
         <optgroup label="CERAMIFLOOR">
             <option value="0.10">Ceramifloor 900 PRIMER (0.10 kg/mq)</option>
@@ -57,6 +58,14 @@
             <option value="0.25">Ceramifloor 920 (0.25 kg/mq)</option>
             <option value="0.25">Ceramifloor 930 (0.25 kg/mq)</option>
             <option value="0.25">Ceramifloor 940 (0.25 kg/mq)</option>
+        </optgroup>
+        <optgroup label="EDILIZIA">
+            <option value="0.12">Smalto 3 Archi (0.12 kg/mq)</option>
+            <option value="0.10">Trasp. Eko (0.10 kg/mq)</option>
+            <option value="0.10">Trasp. Fiorella (0.10 kg/mq)</option>
+            <option value="0.20">Lav. Int. Bravo (0.20 kg/mq)</option>
+            <option value="0.25">Lav. Est. Bellissima (0.25 kg/mq)</option>
+            <option value="0.30">Murosil (0.30 kg/mq)</option>
         </optgroup>
     </select>
 
@@ -70,23 +79,23 @@
 
     <div id="customResaBox" class="hidden">
         <label>NUOVO CONSUMO (kg/mq):</label>
-        <input type="number" id="customResa" step="0.01" placeholder="es. 0.35" oninput="calcola()">
+        <input type="number" id="customResa" step="0.01" placeholder="es. 0.35" inputmode="decimal" oninput="calcola()">
     </div>
 
     <div id="areaDims">
         <label>BASE (m):</label>
-        <input type="number" id="base" placeholder="0" oninput="calcola()">
+        <input type="number" id="base" placeholder="0" inputmode="decimal" oninput="calcola()">
         <label>ALTEZZA (m):</label>
-        <input type="number" id="alt" placeholder="0" oninput="calcola()">
+        <input type="number" id="alt" placeholder="0" inputmode="decimal" oninput="calcola()">
     </div>
 
     <div id="areaMq" class="hidden">
         <label>MQ TOTALI:</label>
-        <input type="number" id="mqtot" placeholder="0" oninput="calcola()">
+        <input type="number" id="mqtot" placeholder="0" inputmode="decimal" oninput="calcola()">
     </div>
 
     <label>MANI:</label>
-    <input type="number" id="mani" value="1" min="1" oninput="calcola()">
+    <input type="number" id="mani" value="1" min="1" inputmode="numeric" oninput="calcola()">
 
     <div class="result-box">
         <span style="font-size: 10px; font-weight: bold; text-transform: uppercase;">Fabbisogno Totale</span>
@@ -132,7 +141,6 @@
         var selectProd = document.getElementById('prodotto');
         var consumoMq;
         
-        // Identifichiamo se è selezionato l'830 tramite il testo dell'opzione
         var nomeProdotto = selectProd.options[selectProd.selectedIndex].text;
         var is830 = nomeProdotto.includes("830") && !isCustom;
 
@@ -154,11 +162,8 @@
         }
 
         var totaleKg = mq * nmani * consumoMq;
-
-        // Scriviamo i KG
         document.getElementById('risultato').innerText = totaleKg.toFixed(2) + " KG";
         
-        // Gestione Confezioni SOLO per Epofloor 830
         var divConf = document.getElementById('confezioni');
         if (is830 && totaleKg > 0) {
             var numConfezioni = Math.ceil(totaleKg / 24);
