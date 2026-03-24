@@ -16,7 +16,6 @@
         label { display: block; text-align: left; margin-top: 15px; color: #aaa; font-size: 11px; text-transform: uppercase; letter-spacing: 1px; }
         input, select { width: 100%; padding: 12px; margin-top: 5px; border-radius: 8px; border: none; background: #333; color: white; box-sizing: border-box; font-size: 16px; outline: none; }
         
-        /* Stile per il Flag Cambio Resa */
         .switch-container { display: flex; align-items: center; justify-content: space-between; margin-top: 20px; padding: 10px; background: #2a2a2a; border-radius: 10px; }
         .switch { position: relative; display: inline-block; width: 40px; height: 20px; }
         .switch input { opacity: 0; width: 0; height: 0; }
@@ -25,11 +24,13 @@
         input:checked + .slider { background-color: #00d1b2; }
         input:checked + .slider:before { transform: translateX(20px); }
         
-        .result-box { margin-top: 25px; background: #00d1b2; color: #121212; padding: 20px; border-radius: 15px; }
-        .result-val { font-size: 2.5em; font-weight: bold; display: block; }
+        .result-box { margin-top: 25px; background: #00d1b2; color: #121212; padding: 15px; border-radius: 15px; min-height: 80px; display: flex; flex-direction: column; justify-content: center; }
+        .result-val { font-size: 2.1em; font-weight: bold; display: block; }
+        .pack-val { font-size: 1.1em; font-weight: bold; display: block; margin-top: 8px; border-top: 1px solid rgba(0,0,0,0.1); padding-top: 8px; color: #004d40; }
+        
         .footer { margin-top: 25px; padding-top: 15px; border-top: 1px solid #333; }
         .footer a { color: #00d1b2; text-decoration: none; font-weight: bold; font-size: 14px; }
-        .hidden { display: none; }
+        .hidden { display: none !important; }
     </style>
 </head>
 <body>
@@ -47,7 +48,7 @@
         <optgroup label="EPOFLOOR">
             <option value="0.40">Epofloor 810 PRIMER (0.40 kg/mq)</option>
             <option value="2.00">Epofloor 810 MASSETTO (2.00 kg/mq)</option>
-            <option value="0.40">Epofloor 830 (0.40 kg/mq)</option>
+            <option value="0.40" id="target830">Epofloor 830 (0.40 kg/mq)</option>
         </optgroup>
         <optgroup label="CERAMIFLOOR">
             <option value="0.10">Ceramifloor 900 PRIMER (0.10 kg/mq)</option>
@@ -60,7 +61,7 @@
     </select>
 
     <div class="switch-container">
-        <span style="font-size: 12px; color: #aaa;">PERSONALIZZA CONSUMO (Kg/mq)</span>
+        <span style="font-size: 11px; color: #aaa;">PERSONALIZZA CONSUMO (Kg/mq)</span>
         <label class="switch">
             <input type="checkbox" id="flagResa" onchange="toggleResa()">
             <span class="slider"></span>
@@ -79,7 +80,7 @@
         <input type="number" id="alt" placeholder="0" oninput="calcola()">
     </div>
 
-    <div id="areaMq" style="display:none">
+    <div id="areaMq" class="hidden">
         <label>MQ TOTALI:</label>
         <input type="number" id="mqtot" placeholder="0" oninput="calcola()">
     </div>
@@ -88,8 +89,9 @@
     <input type="number" id="mani" value="1" min="1" oninput="calcola()">
 
     <div class="result-box">
-        <span style="font-size: 11px; font-weight: bold; text-transform: uppercase;">Fabbisogno Totale</span>
+        <span style="font-size: 10px; font-weight: bold; text-transform: uppercase;">Fabbisogno Totale</span>
         <span id="risultato" class="result-val">0.00 KG</span>
+        <span id="confezioni" class="pack-val hidden">📦 0 Confezioni</span>
     </div>
 
     <div class="footer">
@@ -103,7 +105,7 @@
     function mostra(tipo) {
         mode = tipo;
         document.getElementById('areaDims').style.display = (tipo === 'dims') ? 'block' : 'none';
-        document.getElementById('areaMq').style.display = (tipo === 'mq') ? 'block' : 'none';
+        document.getElementById('areaMq').classList.toggle('hidden', tipo !== 'mq');
         document.getElementById('b1').className = (tipo === 'dims') ? 'btn active' : 'btn';
         document.getElementById('b2').className = (tipo === 'mq') ? 'btn active' : 'btn';
         calcola();
@@ -113,30 +115,31 @@
         var isCustom = document.getElementById('flagResa').checked;
         var box = document.getElementById('customResaBox');
         var sel = document.getElementById('prodotto');
-        var lab = document.getElementById('labelProdotto');
-
         if (isCustom) {
             box.classList.remove('hidden');
             sel.disabled = true;
             sel.style.opacity = "0.3";
-            lab.style.opacity = "0.3";
         } else {
             box.classList.add('hidden');
             sel.disabled = false;
             sel.style.opacity = "1";
-            lab.style.opacity = "1";
         }
         calcola();
     }
 
     function calcola() {
         var isCustom = document.getElementById('flagResa').checked;
+        var selectProd = document.getElementById('prodotto');
         var consumoMq;
+        
+        // Identifichiamo se è selezionato l'830 tramite il testo dell'opzione
+        var nomeProdotto = selectProd.options[selectProd.selectedIndex].text;
+        var is830 = nomeProdotto.includes("830") && !isCustom;
 
         if (isCustom) {
             consumoMq = parseFloat(document.getElementById('customResa').value) || 0;
         } else {
-            consumoMq = parseFloat(document.getElementById('prodotto').value);
+            consumoMq = parseFloat(selectProd.value);
         }
 
         var nmani = parseFloat(document.getElementById('mani').value) || 0;
@@ -150,8 +153,20 @@
             mq = parseFloat(document.getElementById('mqtot').value) || 0;
         }
 
-        var res = mq * nmani * consumoMq;
-        document.getElementById('risultato').innerText = res.toFixed(2) + " KG";
+        var totaleKg = mq * nmani * consumoMq;
+
+        // Scriviamo i KG
+        document.getElementById('risultato').innerText = totaleKg.toFixed(2) + " KG";
+        
+        // Gestione Confezioni SOLO per Epofloor 830
+        var divConf = document.getElementById('confezioni');
+        if (is830 && totaleKg > 0) {
+            var numConfezioni = Math.ceil(totaleKg / 24);
+            divConf.innerText = "📦 " + numConfezioni + " Conf. da 24 KG";
+            divConf.classList.remove('hidden');
+        } else {
+            divConf.classList.add('hidden');
+        }
     }
 </script>
 </body>
