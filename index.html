@@ -4,91 +4,134 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>PaintCalc Pro</title>
-    <link rel="icon" href="data:,">
     <link rel="manifest" href="./manifest.json">
     <meta name="theme-color" content="#00d1b2">
-
     <style>
-        body { font-family: 'Segoe UI', sans-serif; background: #121212; color: white; padding: 15px; margin: 0; }
-        .app-container { max-width: 450px; margin: 20px auto; background: #1e1e1e; padding: 25px; border-radius: 20px; border: 1px solid #333; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
-        
-        h2 { color: #00d1b2; text-align: center; margin-top: 0; font-weight: 300; }
+        body { font-family: sans-serif; background: #121212; color: white; padding: 15px; margin: 0; text-align: center; }
+        .app-container { max-width: 400px; margin: 20px auto; background: #1e1e1e; padding: 20px; border-radius: 20px; border: 1px solid #333; }
         
         /* Selettore Modalità */
-        .mode-selector { display: flex; background: #262626; border-radius: 12px; margin-bottom: 25px; padding: 5px; border: 1px solid #444; }
-        .mode-btn { flex: 1; padding: 12px; border: none; background: transparent; color: #888; cursor: pointer; border-radius: 10px; transition: 0.3s; font-weight: bold; font-size: 0.9em; }
-        .mode-btn.active { background: #00d1b2; color: #121212; box-shadow: 0 4px 10px rgba(0,209,178,0.2); }
+        .mode-selector { display: flex; background: #333; border-radius: 10px; margin-bottom: 20px; padding: 5px; }
+        .mode-btn { flex: 1; padding: 10px; border: none; background: transparent; color: #888; cursor: pointer; border-radius: 8px; font-weight: bold; }
+        .mode-btn.active { background: #00d1b2; color: #121212; }
 
-        label { display: block; margin-top: 15px; color: #aaa; font-size: 0.8em; text-transform: uppercase; letter-spacing: 1px; }
+        label { display: block; margin-top: 15px; color: #888; text-align: left; font-size: 0.8em; }
+        input, select { width: 100%; padding: 12px; margin-top: 5px; border-radius: 10px; border: none; background: #333; color: white; box-sizing: border-box; font-size: 16px; }
         
-        input, select { 
-            width: 100%; padding: 15px; margin-top: 8px; 
-            border-radius: 12px; border: 2px solid #333; background: #262626; 
-            color: white; font-size: 1.1em; box-sizing: border-box; outline: none; transition: 0.3s;
-        }
-        
-        input:focus { border-color: #00d1b2; background: #2a2a2a; }
-
         .row { display: flex; gap: 10px; }
-        .hidden { display: none; }
+        .hidden { display: none !important; }
         
-        .result-area { 
-            margin-top: 25px; background: linear-gradient(135deg, #00d1b2, #009e86); color: #121212; 
-            padding: 20px; border-radius: 15px; text-align: center; box-shadow: 0 5px 15px rgba(0,209,178,0.3);
-        }
-
-        .result-val { font-size: 2.2em; font-weight: bold; display: block; }
+        .result-area { margin-top: 25px; background: #00d1b2; color: #121212; padding: 20px; border-radius: 15px; }
+        .result-val { font-size: 2em; font-weight: bold; display: block; }
         
-        .buckets-info {
-            margin-top: 15px; padding: 15px; background: #262626; border-radius: 12px;
-            font-size: 0.9em; border-left: 4px solid #ff9800; color: #ddd;
-        }
-
-        #installBtn { 
-            display: none; width: 100%; padding: 15px; background: #ff9800; 
-            border: none; border-radius: 12px; color: black; font-weight: bold; 
-            margin-bottom: 20px; cursor: pointer; text-transform: uppercase;
-        }
+        #installBtn { display: none; width: 100%; padding: 15px; background: orange; border: none; border-radius: 12px; font-weight: bold; margin-bottom: 20px; }
     </style>
 </head>
 <body>
 
 <div class="app-container">
-    <button id="installBtn">📲 Installa l'App sul Telefono</button>
-    
+    <button id="installBtn">📲 INSTALLA APP</button>
     <h2>🎨 PaintCalc Pro</h2>
 
-    <label>Metodo di Misura:</label>
     <div class="mode-selector">
-        <button class="mode-btn active" id="btnDim" onclick="setMode('dims')">Dimensioni (m)</button>
-        <button class="mode-btn" id="btnMq" onclick="setMode('mq')">MQ Totali</button>
+        <button id="btnDim" class="mode-btn active" onclick="cambiaMode('dims')">Dimensioni (m)</button>
+        <button id="btnMq" class="mode-btn" onclick="cambiaMode('mq')">MQ Totali</button>
     </div>
 
     <label>Prodotto:</label>
-    <select id="prodotto" onchange="calcola()">
-        <optgroup label="Resine Epofloor (KG)">
-            <option value="0.5">Epofloor 810 (Resa 2 kg/mq)</option>
-            <option value="2.5">Epofloor 830 (Resa 0.4 kg/mq)</option>
-        </optgroup>
-        <optgroup label="Pitture e Vernici (L)">
-            <option value="12">Smalto / Traspirante (12 mq/l)</option>
-            <option value="10" selected>Lavabile Professionale (10 mq/l)</option>
-            <option value="8">Antimuffa / Esterni (8 mq/l)</option>
-        </optgroup>
+    <select id="prodotto" onchange="eseguiCalcolo()">
+        <option value="0.5">Epofloor 810 (2 kg/mq)</option>
+        <option value="2.5">Epofloor 830 (0.4 kg/mq)</option>
+        <option value="10" selected>Lavabile (10 mq/l)</option>
+        <option value="12">Smalto (12 mq/l)</option>
     </select>
 
-    <div id="divDims">
+    <div id="sezioneDims">
         <div class="row">
             <div style="flex:1">
-                <label>Base / Larghezza (m):</label>
-                <input type="number" id="larg" placeholder="es. 4" oninput="calcola()">
+                <label>Base (m):</label>
+                <input type="number" id="inputLarg" placeholder="0" oninput="eseguiCalcolo()">
             </div>
             <div style="flex:1">
                 <label>Altezza (m):</label>
-                <input type="number" id="alt" placeholder="es. 3" oninput="calcola()">
+                <input type="number" id="inputAlt" placeholder="0" oninput="eseguiCalcolo()">
             </div>
         </div>
     </div>
 
-    <div id="divMq" class="hidden">
-        <label
+    <div id="sezioneMq" class="hidden">
+        <label>Superficie Totale (mq):</label>
+        <input type="number" id="inputMqTot" placeholder="es. 50" oninput="eseguiCalcolo()">
+    </div>
+
+    <label>Numero di mani:</label>
+    <input type="number" id="inputMani" value="2" oninput="eseguiCalcolo()">
+
+    <div class="result-area">
+        <span style="font-size: 0.8em; text-transform: uppercase;">Totale Necessario</span>
+        <span class="result-val" id="testoRisultato">0</span>
+    </div>
+</div>
+
+<script>
+    let modalitaAttuale = 'dims';
+
+    function cambiaMode(m) {
+        modalitaAttuale = m;
+        // Gestione tasti
+        document.getElementById('btnDim').classList.toggle('active', m === 'dims');
+        document.getElementById('btnMq').classList.toggle('active', m === 'mq');
+        // Gestione visibilità campi
+        document.getElementById('sezioneDims').classList.toggle('hidden', m === 'mq');
+        document.getElementById('sezioneMq').classList.toggle('hidden', m === 'dims');
+        eseguiCalcolo();
+    }
+
+    function eseguiCalcolo() {
+        const resa = parseFloat(document.getElementById('prodotto').value);
+        const mani = parseFloat(document.getElementById('inputMani').value) || 1;
+        let mq = 0;
+
+        if (modalitaAttuale === 'dims') {
+            const l = parseFloat(document.getElementById('inputLarg').value) || 0;
+            const a = parseFloat(document.getElementById('inputAlt').value) || 0;
+            mq = l * a;
+        } else {
+            mq = parseFloat(document.getElementById('inputMqTot').value) || 0;
+        }
+
+        const nomeProd = document.getElementById('prodotto').options[document.getElementById('prodotto').selectedIndex].text;
+        const unita = nomeProd.includes("Epofloor") ? " KG" : " Litri";
+
+        if (mq > 0) {
+            let totale = (mq * mani) / resa;
+            document.getElementById('testoRisultato').innerText = totale.toFixed(2) + unita;
+        } else {
+            document.getElementById('testoRisultato').innerText = "0" + unita;
+        }
+    }
+
+    // PWA
+    let scattoInstallazione;
+    window.addEventListener('beforeinstallprompt', (e) => {
+        e.preventDefault();
+        scattoInstallazione = e;
+        document.getElementById('installBtn').style.display = 'block';
+    });
+
+    document.getElementById('installBtn').addEventListener('click', () => {
+        if (scattoInstallazione) {
+            scattoInstallazione.prompt();
+            scattoInstallazione.userChoice.then(() => {
+                document.getElementById('installBtn').style.display = 'none';
+                scattoInstallazione = null;
+            });
+        }
+    });
+
+    if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.register('./sw.js');
+    }
+</script>
+</body>
+</html>
