@@ -58,8 +58,8 @@
         </optgroup>
         <optgroup label="EDILIZIA">
             <option value="0.12" data-unit="LT" data-cat="EDILIZIA">Smalto 3 Archi (0.12 lt/mq)</option>
-            <option value="0.10" data-unit="LT" data-cat="EDILIZIA">Trasp. Eko (0.10 lt/mq)</option>
-            <option value="0.10" data-unit="LT" data-cat="EDILIZIA">Trasp. Fiorella (0.10 lt/mq)</option>
+            <option value="0.14" data-unit="LT" data-cat="EDILIZIA">Trasp. Eko (0.14 lt/mq)</option>
+            <option value="0.14" data-unit="LT" data-cat="EDILIZIA">Trasp. Fiorella (0.14 lt/mq)</option>
             <option value="0.14" data-unit="LT" data-cat="EDILIZIA">Lav. Int. Bravo (0.14 lt/mq)</option>
             <option value="0.14" data-unit="LT" data-cat="EDILIZIA">Lav. Est. Bellissima (0.14 lt/mq)</option>
             <option value="0.30" data-unit="KG" data-cat="EDILIZIA">Murosil (0.30 kg/mq)</option>
@@ -75,7 +75,7 @@
     </div>
 
     <div id="customResaBox" class="hidden">
-        <label>NUOVO CONSUMO (valore / mq):</label>
+        <label id="labelCustom">NUOVO CONSUMO:</label>
         <input type="number" id="customResa" step="0.01" placeholder="es. 0.35" inputmode="decimal" oninput="calcola()">
     </div>
 
@@ -123,7 +123,11 @@
         var selectProd = document.getElementById('prodotto');
         var selectedOption = selectProd.options[selectProd.selectedIndex];
         var categoria = selectedOption.getAttribute('data-cat');
+        var unita = selectedOption.getAttribute('data-unit');
         var isCustom = document.getElementById('flagResa').checked;
+
+        // Aggiorna l'etichetta del campo personalizzato per chiarezza
+        document.getElementById('labelCustom').innerText = "NUOVO CONSUMO (" + unita + "/mq):";
 
         if (categoria === 'EDILIZIA' && !isCustom) {
             document.getElementById('boxMani').classList.remove('hidden');
@@ -140,11 +144,10 @@
         var sel = document.getElementById('prodotto');
         if (isCustom) {
             box.classList.remove('hidden');
-            sel.disabled = true;
             sel.style.opacity = "0.3";
+            // Non disabilitiamo del tutto per permettere all'app di leggere l'unità scelta
         } else {
             box.classList.add('hidden');
-            sel.disabled = false;
             sel.style.opacity = "1";
         }
         gestisciCampi();
@@ -154,18 +157,16 @@
         var isCustom = document.getElementById('flagResa').checked;
         var selectProd = document.getElementById('prodotto');
         var consumoMq;
-        var unita = "";
         
         var selectedOption = selectProd.options[selectProd.selectedIndex];
+        var unita = selectedOption.getAttribute('data-unit');
         var nomeProdotto = selectedOption.text;
         var is830 = nomeProdotto.includes("830") && !isCustom;
 
         if (isCustom) {
             consumoMq = parseFloat(document.getElementById('customResa').value) || 0;
-            unita = "UNITÀ"; 
         } else {
             consumoMq = parseFloat(selectProd.value);
-            unita = selectedOption.getAttribute('data-unit');
         }
 
         var nmani = parseFloat(document.getElementById('mani').value) || 1;
