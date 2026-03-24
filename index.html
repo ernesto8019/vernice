@@ -3,24 +3,17 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PaintCalc - La Tua Vernice</title>
+    <title>PaintCalc - Calcolo Vernice</title>
     
     <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#00d1b2">
 
     <style>
-        /* Design moderno e touch-friendly */
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #121212; color: white; padding: 15px; margin: 0; }
-        .app-container { max-width: 450px; margin: 20px auto; background: #1e1e1e; padding: 25px; border-radius: 20px; border: 1px solid #333; box-shadow: 0 10px 30px rgba(0,0,0,0.5); text-align: center; }
+        /* Design scuro, pulito e professionale */
+        body { font-family: 'Segoe UI', sans-serif; background: #121212; color: white; padding: 15px; margin: 0; }
+        .app-container { max-width: 450px; margin: 40px auto; background: #1e1e1e; padding: 25px; border-radius: 20px; border: 1px solid #333; box-shadow: 0 10px 30px rgba(0,0,0,0.5); text-align: center; }
         
-        .logo-container img {
-            max-width: 150px;
-            height: auto;
-            margin-bottom: 10px;
-            border-radius: 10px;
-        }
-
-        h2 { color: #00d1b2; margin-bottom: 25px; font-weight: 300; }
+        h2 { color: #00d1b2; margin-bottom: 30px; font-weight: 300; font-size: 2em; }
         
         label { display: block; margin-top: 20px; color: #888; font-size: 0.85em; text-align: left; text-transform: uppercase; letter-spacing: 1px; }
         
@@ -47,31 +40,83 @@
             font-size: 1.8em; font-weight: bold; box-shadow: 0 5px 15px rgba(0,209,178,0.3);
         }
 
-        .footer-info { margin-top: 20px; font-size: 0.75em; color: #555; }
+        .footer-info { margin-top: 30px; font-size: 0.8em; color: #444; }
     </style>
 </head>
 <body>
 
 <div class="app-container">
-    <div class="logo-container">
-        <img src="logo.png" alt="Logo" onerror="this.style.display='none'">
-    </div>
+    <h2>🎨 PaintCalc</h2>
 
-    <h2>🎨 PaintCalc Pro</h2>
-
-    <label>Seleziona Prodotto:</label>
+    <label>Tipo di Prodotto:</label>
     <select id="prodotto" onchange="calcola()">
         <option value="10">Idropittura Lavabile (10 mq/l)</option>
         <option value="12">Smalto all'acqua (12 mq/l)</option>
         <option value="8">Pittura Antimuffa (8 mq/l)</option>
         <option value="15">Fissativo / Primer (15 mq/l)</option>
+        <option value="14">Vernice per Legno (14 mq/l)</option>
     </select>
 
     <div class="row">
         <div style="flex:1">
             <label>Larghezza (m):</label>
-            <input type="number" id="larg" placeholder="es. 4.5" oninput="calcola()">
+            <input type="number" id="larg" placeholder="es. 4" oninput="calcola()">
         </div>
         <div style="flex:1">
             <label>Altezza (m):</label>
-            <input type="number" id="alt" placeholder="es.
+            <input type="number" id="alt" placeholder="es. 3" oninput="calcola()">
+        </div>
+    </div>
+
+    <label>Numero di mani:</label>
+    <input type="number" id="mani" value="2" min="1" oninput="calcola()">
+
+    <div class="sfrido-box" onclick="toggleCheckbox()">
+        <input type="checkbox" id="sfrido" onchange="calcola()">
+        <span>Aggiungi 10% di scarto</span>
+    </div>
+
+    <div class="result-area" id="risultato">
+        0 Litri
+    </div>
+
+    <div class="footer-info">
+        Calcolatore professionale di precisione.
+    </div>
+</div>
+
+<script>
+    function calcola() {
+        const resa = parseFloat(document.getElementById('prodotto').value);
+        const larg = parseFloat(document.getElementById('larg').value) || 0;
+        const alt = parseFloat(document.getElementById('alt').value) || 0;
+        const mani = parseFloat(document.getElementById('mani').value) || 1;
+        const serveSfrido = document.getElementById('sfrido').checked;
+
+        if (larg > 0 && alt > 0) {
+            let litri = (larg * alt * mani) / resa;
+            if (serveSfrido) litri = litri * 1.10;
+            document.getElementById('risultato').innerText = litri.toFixed(2) + " Litri";
+        } else {
+            document.getElementById('risultato').innerText = "0 Litri";
+        }
+    }
+
+    function toggleCheckbox() {
+        const cb = document.getElementById('sfrido');
+        cb.checked = !cb.checked;
+        calcola();
+    }
+
+    // Registrazione del Service Worker per l'installazione
+    if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+            navigator.serviceWorker.register('sw.js')
+                .then(reg => console.log('SW Registrato'))
+                .catch(err => console.log('Errore SW', err));
+        });
+    }
+</script>
+
+</body>
+</html>
