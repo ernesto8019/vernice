@@ -3,69 +3,154 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PaintCalc</title>
-    
+    <title>PaintCalc Pro - Resine e Vernici</title>
     <link rel="icon" href="data:,">
-    
     <link rel="manifest" href="./manifest.json">
     <meta name="theme-color" content="#00d1b2">
 
     <style>
-        body { font-family: sans-serif; background: #121212; color: white; padding: 15px; margin: 0; text-align: center; }
-        .app-container { max-width: 400px; margin: 20px auto; background: #1e1e1e; padding: 20px; border-radius: 20px; border: 1px solid #333; }
-        h2 { color: #00d1b2; }
-        label { display: block; margin-top: 15px; color: #888; text-align: left; }
-        input, select { width: 100%; padding: 12px; margin-top: 5px; border-radius: 10px; border: none; background: #333; color: white; box-sizing: border-box; }
-        .result { margin-top: 20px; background: #00d1b2; color: #121212; padding: 20px; border-radius: 15px; font-size: 1.5em; font-weight: bold; }
-        /* Tasto Installa (apparirà solo se possibile) */
-        #installBtn { display: none; margin-top: 20px; padding: 10px; background: orange; border: none; border-radius: 10px; font-weight: bold; width: 100%; }
+        body { font-family: 'Segoe UI', sans-serif; background: #121212; color: white; padding: 15px; margin: 0; }
+        .app-container { max-width: 450px; margin: 20px auto; background: #1e1e1e; padding: 25px; border-radius: 20px; border: 1px solid #333; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
+        
+        h2 { color: #00d1b2; text-align: center; margin-top: 0; font-weight: 300; }
+        
+        label { display: block; margin-top: 15px; color: #888; font-size: 0.85em; text-transform: uppercase; letter-spacing: 1px; }
+        
+        input, select { 
+            width: 100%; padding: 15px; margin-top: 8px; 
+            border-radius: 12px; border: 2px solid #333; background: #262626; 
+            color: white; font-size: 1.1em; box-sizing: border-box; outline: none;
+        }
+        
+        input:focus, select:focus { border-color: #00d1b2; }
+
+        .row { display: flex; gap: 10px; }
+        
+        .result-area { 
+            margin-top: 25px; background: linear-gradient(135deg, #00d1b2, #009e86); color: #121212; 
+            padding: 20px; border-radius: 15px; text-align: center; 
+        }
+
+        .result-val { font-size: 2.2em; font-weight: bold; display: block; }
+        
+        .buckets-info {
+            margin-top: 15px; padding: 15px; background: #262626; border-radius: 12px;
+            font-size: 0.9em; border-left: 4px solid #ff9800;
+        }
+
+        #installBtn { 
+            display: none; width: 100%; padding: 15px; background: #ff9800; 
+            border: none; border-radius: 12px; color: black; font-weight: bold; 
+            margin-bottom: 20px; cursor: pointer;
+        }
     </style>
 </head>
 <body>
 
 <div class="app-container">
-    <h2>🎨 PaintCalc</h2>
+    <button id="installBtn">📲 INSTALLA APP VERNICI</button>
     
-    <button id="installBtn">📲 INSTALLA APP</button>
+    <h2>🎨 PaintCalc Pro</h2>
 
-    <label>Prodotto:</label>
+    <label>Seleziona Prodotto:</label>
     <select id="prodotto" onchange="calcola()">
-        <option value="10">Lavabile (10 mq/l)</option>
-        <option value="12">Smalto (12 mq/l)</option>
+        <optgroup label="Resine Epofloor">
+            <option value="0.5">Epofloor 810 (Resa 2 kg/mq)</option>
+            <option value="2.5">Epofloor 830 (Resa 0.4 kg/mq)</option>
+        </optgroup>
+        <optgroup label="Pitture Interni">
+            <option value="12">Traspirante (12 mq/l)</option>
+            <option value="10" selected>Lavabile (10 mq/l)</option>
+            <option value="8">Antimuffa (8 mq/l)</option>
+        </optgroup>
+        <optgroup label="Esterni">
+            <option value="7">Quarzo (7 mq/l)</option>
+            <option value="6">Silossanica (6 mq/l)</option>
+        </optgroup>
+        <optgroup label="Smalto e Legno">
+            <option value="12">Smalto H2O (12 mq/l)</option>
+            <option value="15">Impregnante (15 mq/l)</option>
+        </optgroup>
     </select>
 
-    <label>Dimensioni (m):</label>
-    <div style="display:flex; gap:10px;">
-        <input type="number" id="larg" placeholder="Larg." oninput="calcola()">
-        <input type="number" id="alt" placeholder="Alt." oninput="calcola()">
+    <div class="row">
+        <div style="flex:1">
+            <label>Larghezza / MQ:</label>
+            <input type="number" id="larg" placeholder="es. 10" oninput="calcola()">
+        </div>
+        <div style="flex:1">
+            <label>Altezza (m):</label>
+            <input type="number" id="alt" value="1" oninput="calcola()">
+        </div>
     </div>
 
-    <div class="result" id="risultato">0 Litri</div>
+    <label>Numero di mani:</label>
+    <input type="number" id="mani" value="2" min="1" oninput="calcola()">
+
+    <div class="result-area">
+        <span id="labelRisultato" style="font-size: 0.8em; text-transform: uppercase;">Quantità Totale</span>
+        <span class="result-val" id="risultato">0</span>
+    </div>
+
+    <div class="buckets-info" id="secchiInfo">
+        Inserisci i dati per il calcolo dei formati.
+    </div>
 </div>
 
 <script>
-    // Funzione per il calcolo
     function calcola() {
-        const resa = parseFloat(document.getElementById('prodotto').value);
+        const select = document.getElementById('prodotto');
+        const resa = parseFloat(select.value);
         const larg = parseFloat(document.getElementById('larg').value) || 0;
         const alt = parseFloat(document.getElementById('alt').value) || 0;
-        const mani = parseFloat(document.getElementById('mani').value) || 2;
+        const mani = parseFloat(document.getElementById('mani').value) || 1;
+        
+        // Verifica se è un prodotto Epofloor (resa espressa in kg/mq)
+        const isEpofloor = select.options[select.selectedIndex].text.includes("Epofloor");
+
         if (larg > 0 && alt > 0) {
-            let litri = (larg * alt * mani) / resa;
-            document.getElementById('risultato').innerText = litri.toFixed(2) + " Litri";
+            let totale = (larg * alt * mani) / resa;
+            let unita = isEpofloor ? " KG" : " Litri";
+            
+            document.getElementById('risultato').innerText = totale.toFixed(2) + unita;
+            
+            // Suggerimento acquisto
+            let info = "<b>Consiglio:</b><br>";
+            if (isEpofloor) {
+                info += "• Ordinare circa " + Math.ceil(totale) + " KG di formulato A+B";
+            } else {
+                if (totale <= 2.5) info += "• 1 Barattolo da 2.5L";
+                else if (totale <= 5) info += "• 1 Secchio da 5L";
+                else if (totale <= 14) info += "• 1 Secchio da 14L";
+                else info += "• " + Math.ceil(totale/14) + " Secchi da 14L";
+            }
+            document.getElementById('secchiInfo').innerHTML = info;
         } else {
-            document.getElementById('risultato').innerText = "0 Litri";
+            document.getElementById('risultato').innerText = "0";
+            document.getElementById('secchiInfo').innerHTML = "Inserisci i dati.";
         }
     }
 
-    // REGISTRAZIONE SERVICE WORKER (FONDAMENTALE PER INSTALLARE)
+    // Gestione Installazione
+    let deferredPrompt;
+    window.addEventListener('beforeinstallprompt', (e) => {
+        e.preventDefault();
+        deferredPrompt = e;
+        document.getElementById('installBtn').style.display = 'block';
+    });
+
+    document.getElementById('installBtn').addEventListener('click', () => {
+        if (deferredPrompt) {
+            deferredPrompt.prompt();
+            deferredPrompt.userChoice.then(() => {
+                document.getElementById('installBtn').style.display = 'none';
+                deferredPrompt = null;
+            });
+        }
+    });
+
     if ('serviceWorker' in navigator) {
-        window.addEventListener('load', () => {
-            // Nota il punto davanti a /sw.js - è importantissimo!
-            navigator.serviceWorker.register('./sw.js')
-                .then(reg => console.log('App pronta per installazione'))
-                .catch(err => console.log('Errore caricamento:', err));
-        });
+        navigator.serviceWorker.register('./sw.js');
     }
 </script>
 </body>
