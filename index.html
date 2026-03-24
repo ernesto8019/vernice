@@ -1,95 +1,77 @@
 <!DOCTYPE html>
 <html lang="it">
 <head>
-    <link rel="manifest" href="manifest.json">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PaintCalc Mobile</title>
+    <title>PaintCalc - La Tua Vernice</title>
+    
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#00d1b2">
+
     <style>
-        /* Design ottimizzato per il pollice (Touch-friendly) */
-        body { font-family: sans-serif; background: #121212; color: white; padding: 15px; }
-        .app-container { max-width: 400px; margin: auto; background: #1e1e1e; padding: 20px; border-radius: 20px; border: 1px solid #333; }
-        h2 { text-align: center; color: #00d1b2; }
-        label { display: block; margin-top: 15px; color: #bbb; font-size: 0.9em; }
+        /* Design moderno e touch-friendly */
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #121212; color: white; padding: 15px; margin: 0; }
+        .app-container { max-width: 450px; margin: 20px auto; background: #1e1e1e; padding: 25px; border-radius: 20px; border: 1px solid #333; box-shadow: 0 10px 30px rgba(0,0,0,0.5); text-align: center; }
+        
+        .logo-container img {
+            max-width: 150px;
+            height: auto;
+            margin-bottom: 10px;
+            border-radius: 10px;
+        }
+
+        h2 { color: #00d1b2; margin-bottom: 25px; font-weight: 300; }
+        
+        label { display: block; margin-top: 20px; color: #888; font-size: 0.85em; text-align: left; text-transform: uppercase; letter-spacing: 1px; }
+        
         input, select { 
-            width: 100%; padding: 15px; margin-top: 5px; 
-            border-radius: 10px; border: none; background: #333; 
-            color: white; font-size: 1.1em; box-sizing: border-box;
+            width: 100%; padding: 15px; margin-top: 8px; 
+            border-radius: 12px; border: 2px solid #333; background: #262626; 
+            color: white; font-size: 1.1em; box-sizing: border-box; outline: none; transition: border-color 0.3s;
         }
-        .row { display: flex; gap: 10px; }
+        
+        input:focus, select:focus { border-color: #00d1b2; }
+
+        .row { display: flex; gap: 15px; }
+        
         .sfrido-box { 
-            margin-top: 20px; display: flex; align-items: center; 
-            background: #2c2c2c; padding: 10px; border-radius: 10px;
+            margin-top: 25px; display: flex; align-items: center; 
+            background: #262626; padding: 15px; border-radius: 12px; text-align: left; cursor: pointer;
         }
+        
+        .sfrido-box input[type="checkbox"] { width: 22px; height: 22px; margin-right: 15px; cursor: pointer; }
+
         .result-area { 
-            margin-top: 20px; background: #00d1b2; color: #121212; 
-            padding: 20px; border-radius: 15px; text-align: center; 
-            font-size: 1.5em; font-weight: bold; 
+            margin-top: 30px; background: linear-gradient(135deg, #00d1b2, #009e86); color: #121212; 
+            padding: 25px; border-radius: 15px; text-align: center; 
+            font-size: 1.8em; font-weight: bold; box-shadow: 0 5px 15px rgba(0,209,178,0.3);
         }
+
+        .footer-info { margin-top: 20px; font-size: 0.75em; color: #555; }
     </style>
 </head>
 <body>
 
 <div class="app-container">
-    <h2>🎨 Vernice App</h2>
+    <div class="logo-container">
+        <img src="logo.png" alt="Logo" onerror="this.style.display='none'">
+    </div>
 
-    <label>Prodotto:</label>
+    <h2>🎨 PaintCalc Pro</h2>
+
+    <label>Seleziona Prodotto:</label>
     <select id="prodotto" onchange="calcola()">
-        <option value="10">Lavabile (10 mq/l)</option>
-        <option value="12">Smalto (12 mq/l)</option>
-        <option value="8">Antimuffa (8 mq/l)</option>
+        <option value="10">Idropittura Lavabile (10 mq/l)</option>
+        <option value="12">Smalto all'acqua (12 mq/l)</option>
+        <option value="8">Pittura Antimuffa (8 mq/l)</option>
+        <option value="15">Fissativo / Primer (15 mq/l)</option>
     </select>
 
     <div class="row">
         <div style="flex:1">
-            <label>Largh. (m):</label>
-            <input type="number" id="larg" placeholder="0" oninput="calcola()">
+            <label>Larghezza (m):</label>
+            <input type="number" id="larg" placeholder="es. 4.5" oninput="calcola()">
         </div>
         <div style="flex:1">
-            <label>Alt. (m):</label>
-            <input type="number" id="alt" placeholder="0" oninput="calcola()">
-        </div>
-    </div>
-
-    <label>Mani di vernice:</label>
-    <input type="number" id="mani" value="2" oninput="calcola()">
-
-    <div class="sfrido-box">
-        <input type="checkbox" id="sfrido" onchange="calcola()" style="width: 25px; margin: 0 10px 0 0;">
-        <span>Aggiungi 10% di scarto</span>
-    </div>
-
-    <div class="result-area" id="risultato">
-        0 Litri
-    </div>
-</div>
-
-<script>
-    function calcola() {
-        const resa = parseFloat(document.getElementById('prodotto').value);
-        const larg = parseFloat(document.getElementById('larg').value) || 0;
-        const alt = parseFloat(document.getElementById('alt').value) || 0;
-        const mani = parseFloat(document.getElementById('mani').value) || 1;
-        const serveSfrido = document.getElementById('sfrido').checked;
-
-        if (larg > 0 && alt > 0) {
-            let litri = (larg * alt * mani) / resa;
-            
-            // Se la casella è spuntata, aggiungiamo il 10%
-            if (serveSfrido) {
-                litri = litri * 1.10;
-            }
-
-            document.getElementById('risultato').innerText = litri.toFixed(2) + " Litri";
-        } else {
-            document.getElementById('risultato').innerText = "0 Litri";
-        }
-    }
-</script>
-<script>
-  if ('serviceWorker' in navigator) {
-    navigator.serviceWorker.register('sw.js');
-  }
-</script>
-</body>
-</html>
+            <label>Altezza (m):</label>
+            <input type="number" id="alt" placeholder="es.
