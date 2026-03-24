@@ -3,120 +3,80 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PaintCalc - Calcolo Vernice</title>
+    <title>PaintCalc</title>
+    
+    <link rel="icon" href="data:,">
     
     <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#00d1b2">
 
     <style>
-        /* Design scuro, pulito e professionale */
-        body { font-family: 'Segoe UI', sans-serif; background: #121212; color: white; padding: 15px; margin: 0; }
-        .app-container { max-width: 450px; margin: 40px auto; background: #1e1e1e; padding: 25px; border-radius: 20px; border: 1px solid #333; box-shadow: 0 10px 30px rgba(0,0,0,0.5); text-align: center; }
-        
-        h2 { color: #00d1b2; margin-bottom: 30px; font-weight: 300; font-size: 2em; }
-        
-        label { display: block; margin-top: 20px; color: #888; font-size: 0.85em; text-align: left; text-transform: uppercase; letter-spacing: 1px; }
-        
-        input, select { 
-            width: 100%; padding: 15px; margin-top: 8px; 
-            border-radius: 12px; border: 2px solid #333; background: #262626; 
-            color: white; font-size: 1.1em; box-sizing: border-box; outline: none; transition: border-color 0.3s;
-        }
-        
-        input:focus, select:focus { border-color: #00d1b2; }
-
-        .row { display: flex; gap: 15px; }
-        
-        .sfrido-box { 
-            margin-top: 25px; display: flex; align-items: center; 
-            background: #262626; padding: 15px; border-radius: 12px; text-align: left; cursor: pointer;
-        }
-        
-        .sfrido-box input[type="checkbox"] { width: 22px; height: 22px; margin-right: 15px; cursor: pointer; }
-
-        .result-area { 
-            margin-top: 30px; background: linear-gradient(135deg, #00d1b2, #009e86); color: #121212; 
-            padding: 25px; border-radius: 15px; text-align: center; 
-            font-size: 1.8em; font-weight: bold; box-shadow: 0 5px 15px rgba(0,209,178,0.3);
-        }
-
-        .footer-info { margin-top: 30px; font-size: 0.8em; color: #444; }
+        body { font-family: sans-serif; background: #121212; color: white; padding: 15px; margin: 0; text-align: center; }
+        .app-container { max-width: 400px; margin: 20px auto; background: #1e1e1e; padding: 20px; border-radius: 20px; border: 1px solid #333; }
+        h2 { color: #00d1b2; }
+        label { display: block; margin-top: 15px; color: #888; text-align: left; }
+        input, select { width: 100%; padding: 12px; margin-top: 5px; border-radius: 10px; border: none; background: #333; color: white; box-sizing: border-box; }
+        .result { margin-top: 20px; background: #00d1b2; color: #121212; padding: 20px; border-radius: 15px; font-size: 1.5em; font-weight: bold; }
+        /* Tasto Installa (apparirà solo se possibile) */
+        #installBtn { display: none; margin-top: 20px; padding: 10px; background: orange; border: none; border-radius: 10px; font-weight: bold; width: 100%; }
     </style>
 </head>
 <body>
 
 <div class="app-container">
     <h2>🎨 PaintCalc</h2>
+    
+    <button id="installBtn">📲 INSTALLA APP</button>
 
-    <label>Tipo di Prodotto:</label>
+    <label>Prodotto:</label>
     <select id="prodotto" onchange="calcola()">
-        <option value="10">Idropittura Lavabile (10 mq/l)</option>
-        <option value="12">Smalto all'acqua (12 mq/l)</option>
-        <option value="8">Pittura Antimuffa (8 mq/l)</option>
-        <option value="15">Fissativo / Primer (15 mq/l)</option>
-        <option value="14">Vernice per Legno (14 mq/l)</option>
+        <option value="10">Lavabile (10 mq/l)</option>
+        <option value="12">Smalto (12 mq/l)</option>
     </select>
 
-    <div class="row">
-        <div style="flex:1">
-            <label>Larghezza (m):</label>
-            <input type="number" id="larg" placeholder="es. 4" oninput="calcola()">
-        </div>
-        <div style="flex:1">
-            <label>Altezza (m):</label>
-            <input type="number" id="alt" placeholder="es. 3" oninput="calcola()">
-        </div>
+    <label>Dimensioni (m):</label>
+    <div style="display:flex; gap:10px;">
+        <input type="number" id="larg" placeholder="Larg." oninput="calcola()">
+        <input type="number" id="alt" placeholder="Alt." oninput="calcola()">
     </div>
 
-    <label>Numero di mani:</label>
-    <input type="number" id="mani" value="2" min="1" oninput="calcola()">
-
-    <div class="sfrido-box" onclick="toggleCheckbox()">
-        <input type="checkbox" id="sfrido" onchange="calcola()">
-        <span>Aggiungi 10% di scarto</span>
-    </div>
-
-    <div class="result-area" id="risultato">
-        0 Litri
-    </div>
-
-    <div class="footer-info">
-        Calcolatore professionale di precisione.
-    </div>
+    <div class="result" id="risultato">0 Litri</div>
 </div>
 
 <script>
     function calcola() {
-        const resa = parseFloat(document.getElementById('prodotto').value);
-        const larg = parseFloat(document.getElementById('larg').value) || 0;
-        const alt = parseFloat(document.getElementById('alt').value) || 0;
-        const mani = parseFloat(document.getElementById('mani').value) || 1;
-        const serveSfrido = document.getElementById('sfrido').checked;
-
+        const resa = document.getElementById('prodotto').value;
+        const larg = document.getElementById('larg').value || 0;
+        const alt = document.getElementById('alt').value || 0;
         if (larg > 0 && alt > 0) {
-            let litri = (larg * alt * mani) / resa;
-            if (serveSfrido) litri = litri * 1.10;
+            let litri = (larg * alt * 2) / resa;
             document.getElementById('risultato').innerText = litri.toFixed(2) + " Litri";
-        } else {
-            document.getElementById('risultato').innerText = "0 Litri";
         }
     }
 
-    function toggleCheckbox() {
-        const cb = document.getElementById('sfrido');
-        cb.checked = !cb.checked;
-        calcola();
-    }
+    // GESTIONE INSTALLAZIONE
+    let deferredPrompt;
+    const installBtn = document.getElementById('installBtn');
 
-    // Registrazione del Service Worker per l'installazione
+    window.addEventListener('beforeinstallprompt', (e) => {
+        e.preventDefault();
+        deferredPrompt = e;
+        installBtn.style.display = 'block'; // Mostra il tasto se l'app è installabile
+    });
+
+    installBtn.addEventListener('click', () => {
+        if (deferredPrompt) {
+            deferredPrompt.prompt();
+            deferredPrompt.userChoice.then((choice) => {
+                if (choice.outcome === 'accepted') installBtn.style.display = 'none';
+                deferredPrompt = null;
+            });
+        }
+    });
+
     if ('serviceWorker' in navigator) {
-        window.addEventListener('load', () => {
-            navigator.serviceWorker.register('sw.js')
-                .then(reg => console.log('SW Registrato'))
-                .catch(err => console.log('Errore SW', err));
-        });
+        navigator.serviceWorker.register('sw.js');
     }
 </script>
-
 </body>
 </html>
