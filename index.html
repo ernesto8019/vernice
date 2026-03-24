@@ -47,30 +47,30 @@
     <label id="labelProdotto">SISTEMA / PRODOTTO:</label>
     <select id="prodotto" onchange="calcola()">
         <optgroup label="EPOFLOOR">
-            <option value="0.40">Epofloor 810 PRIMER (0.40 kg/mq)</option>
-            <option value="2.00">Epofloor 810 MASSETTO (2.00 kg/mq)</option>
-            <option value="0.40">Epofloor 830 (0.40 kg/mq)</option>
+            <option value="0.40" data-unit="KG">Epofloor 810 PRIMER (0.40 kg/mq)</option>
+            <option value="2.00" data-unit="KG">Epofloor 810 MASSETTO (2.00 kg/mq)</option>
+            <option value="0.40" data-unit="KG">Epofloor 830 (0.40 kg/mq)</option>
         </optgroup>
         <optgroup label="CERAMIFLOOR">
-            <option value="0.10">Ceramifloor 900 PRIMER (0.10 kg/mq)</option>
-            <option value="0.07">Ceramifloor 900 ANTIPOLVERE (0.07 kg/mq)</option>
-            <option value="0.30">Ceramifloor 910 (0.30 kg/mq)</option>
-            <option value="0.25">Ceramifloor 920 (0.25 kg/mq)</option>
-            <option value="0.25">Ceramifloor 930 (0.25 kg/mq)</option>
-            <option value="0.25">Ceramifloor 940 (0.25 kg/mq)</option>
+            <option value="0.10" data-unit="KG">Ceramifloor 900 PRIMER (0.10 kg/mq)</option>
+            <option value="0.07" data-unit="KG">Ceramifloor 900 ANTIPOLVERE (0.07 kg/mq)</option>
+            <option value="0.30" data-unit="KG">Ceramifloor 910 (0.30 kg/mq)</option>
+            <option value="0.25" data-unit="KG">Ceramifloor 920 (0.25 kg/mq)</option>
+            <option value="0.25" data-unit="KG">Ceramifloor 930 (0.25 kg/mq)</option>
+            <option value="0.25" data-unit="KG">Ceramifloor 940 (0.25 kg/mq)</option>
         </optgroup>
         <optgroup label="EDILIZIA">
-            <option value="0.12">Smalto 3 Archi (0.12 kg/mq)</option>
-            <option value="0.10">Trasp. Eko (0.10 kg/mq)</option>
-            <option value="0.10">Trasp. Fiorella (0.10 kg/mq)</option>
-            <option value="0.20">Lav. Int. Bravo (0.20 kg/mq)</option>
-            <option value="0.25">Lav. Est. Bellissima (0.25 kg/mq)</option>
-            <option value="0.30">Murosil (0.30 kg/mq)</option>
+            <option value="0.12" data-unit="LT">Smalto 3 Archi (0.12 lt/mq)</option>
+            <option value="0.10" data-unit="LT">Trasp. Eko (0.10 lt/mq)</option>
+            <option value="0.10" data-unit="LT">Trasp. Fiorella (0.10 lt/mq)</option>
+            <option value="0.14" data-unit="LT">Lav. Int. Bravo (0.14 lt/mq)</option>
+            <option value="0.14" data-unit="LT">Lav. Est. Bellissima (0.14 lt/mq)</option>
+            <option value="0.30" data-unit="KG">Murosil (0.30 kg/mq)</option>
         </optgroup>
     </select>
 
     <div class="switch-container">
-        <span style="font-size: 11px; color: #aaa;">PERSONALIZZA CONSUMO (Kg/mq)</span>
+        <span style="font-size: 11px; color: #aaa;">PERSONALIZZA CONSUMO</span>
         <label class="switch">
             <input type="checkbox" id="flagResa" onchange="toggleResa()">
             <span class="slider"></span>
@@ -78,7 +78,7 @@
     </div>
 
     <div id="customResaBox" class="hidden">
-        <label>NUOVO CONSUMO (kg/mq):</label>
+        <label>NUOVO CONSUMO (kg o lt / mq):</label>
         <input type="number" id="customResa" step="0.01" placeholder="es. 0.35" inputmode="decimal" oninput="calcola()">
     </div>
 
@@ -140,14 +140,18 @@
         var isCustom = document.getElementById('flagResa').checked;
         var selectProd = document.getElementById('prodotto');
         var consumoMq;
+        var unita = "KG"; // Default
         
-        var nomeProdotto = selectProd.options[selectProd.selectedIndex].text;
+        var selectedOption = selectProd.options[selectProd.selectedIndex];
+        var nomeProdotto = selectedOption.text;
         var is830 = nomeProdotto.includes("830") && !isCustom;
 
         if (isCustom) {
             consumoMq = parseFloat(document.getElementById('customResa').value) || 0;
+            unita = "KG/LT";
         } else {
             consumoMq = parseFloat(selectProd.value);
+            unita = selectedOption.getAttribute('data-unit');
         }
 
         var nmani = parseFloat(document.getElementById('mani').value) || 0;
@@ -161,12 +165,12 @@
             mq = parseFloat(document.getElementById('mqtot').value) || 0;
         }
 
-        var totaleKg = mq * nmani * consumoMq;
-        document.getElementById('risultato').innerText = totaleKg.toFixed(2) + " KG";
+        var totale = mq * nmani * consumoMq;
+        document.getElementById('risultato').innerText = totale.toFixed(2) + " " + unita;
         
         var divConf = document.getElementById('confezioni');
-        if (is830 && totaleKg > 0) {
-            var numConfezioni = Math.ceil(totaleKg / 24);
+        if (is830 && totale > 0) {
+            var numConfezioni = Math.ceil(totale / 24);
             divConf.innerText = "📦 " + numConfezioni + " Conf. da 24 KG";
             divConf.classList.remove('hidden');
         } else {
