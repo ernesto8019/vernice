@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PaintCalc Mobile</title>
+    <style>
+        /* Design ottimizzato per il pollice (Touch-friendly) */
+        body { font-family: sans-serif; background: #121212; color: white; padding: 15px; }
+        .app-container { max-width: 400px; margin: auto; background: #1e1e1e; padding: 20px; border-radius: 20px; border: 1px solid #333; }
+        h2 { text-align: center; color: #00d1b2; }
+        label { display: block; margin-top: 15px; color: #bbb; font-size: 0.9em; }
+        input, select { 
+            width: 100%; padding: 15px; margin-top: 5px; 
+            border-radius: 10px; border: none; background: #333; 
+            color: white; font-size: 1.1em; box-sizing: border-box;
+        }
+        .row { display: flex; gap: 10px; }
+        .sfrido-box { 
+            margin-top: 20px; display: flex; align-items: center; 
+            background: #2c2c2c; padding: 10px; border-radius: 10px;
+        }
+        .result-area { 
+            margin-top: 20px; background: #00d1b2; color: #121212; 
+            padding: 20px; border-radius: 15px; text-align: center; 
+            font-size: 1.5em; font-weight: bold; 
+        }
+    </style>
+</head>
+<body>
+
+<div class="app-container">
+    <h2>🎨 Vernice App</h2>
+
+    <label>Prodotto:</label>
+    <select id="prodotto" onchange="calcola()">
+        <option value="10">Lavabile (10 mq/l)</option>
+        <option value="12">Smalto (12 mq/l)</option>
+        <option value="8">Antimuffa (8 mq/l)</option>
+    </select>
+
+    <div class="row">
+        <div style="flex:1">
+            <label>Largh. (m):</label>
+            <input type="number" id="larg" placeholder="0" oninput="calcola()">
+        </div>
+        <div style="flex:1">
+            <label>Alt. (m):</label>
+            <input type="number" id="alt" placeholder="0" oninput="calcola()">
+        </div>
+    </div>
+
+    <label>Mani di vernice:</label>
+    <input type="number" id="mani" value="2" oninput="calcola()">
+
+    <div class="sfrido-box">
+        <input type="checkbox" id="sfrido" onchange="calcola()" style="width: 25px; margin: 0 10px 0 0;">
+        <span>Aggiungi 10% di scarto</span>
+    </div>
+
+    <div class="result-area" id="risultato">
+        0 Litri
+    </div>
+</div>
+
+<script>
+    function calcola() {
+        const resa = parseFloat(document.getElementById('prodotto').value);
+        const larg = parseFloat(document.getElementById('larg').value) || 0;
+        const alt = parseFloat(document.getElementById('alt').value) || 0;
+        const mani = parseFloat(document.getElementById('mani').value) || 1;
+        const serveSfrido = document.getElementById('sfrido').checked;
+
+        if (larg > 0 && alt > 0) {
+            let litri = (larg * alt * mani) / resa;
+            
+            // Se la casella è spuntata, aggiungiamo il 10%
+            if (serveSfrido) {
+                litri = litri * 1.10;
+            }
+
+            document.getElementById('risultato').innerText = litri.toFixed(2) + " Litri";
+        } else {
+            document.getElementById('risultato').innerText = "0 Litri";
+        }
+    }
+</script>
+
+</body>
+</html>
