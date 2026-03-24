@@ -44,38 +44,28 @@
 </div>
 
 <script>
+    // Funzione per il calcolo
     function calcola() {
-        const resa = document.getElementById('prodotto').value;
-        const larg = document.getElementById('larg').value || 0;
-        const alt = document.getElementById('alt').value || 0;
+        const resa = parseFloat(document.getElementById('prodotto').value);
+        const larg = parseFloat(document.getElementById('larg').value) || 0;
+        const alt = parseFloat(document.getElementById('alt').value) || 0;
+        const mani = parseFloat(document.getElementById('mani').value) || 2;
         if (larg > 0 && alt > 0) {
-            let litri = (larg * alt * 2) / resa;
+            let litri = (larg * alt * mani) / resa;
             document.getElementById('risultato').innerText = litri.toFixed(2) + " Litri";
+        } else {
+            document.getElementById('risultato').innerText = "0 Litri";
         }
     }
 
-    // GESTIONE INSTALLAZIONE
-    let deferredPrompt;
-    const installBtn = document.getElementById('installBtn');
-
-    window.addEventListener('beforeinstallprompt', (e) => {
-        e.preventDefault();
-        deferredPrompt = e;
-        installBtn.style.display = 'block'; // Mostra il tasto se l'app è installabile
-    });
-
-    installBtn.addEventListener('click', () => {
-        if (deferredPrompt) {
-            deferredPrompt.prompt();
-            deferredPrompt.userChoice.then((choice) => {
-                if (choice.outcome === 'accepted') installBtn.style.display = 'none';
-                deferredPrompt = null;
-            });
-        }
-    });
-
+    // REGISTRAZIONE SERVICE WORKER (FONDAMENTALE PER INSTALLARE)
     if ('serviceWorker' in navigator) {
-        navigator.serviceWorker.register('./sw.js');
+        window.addEventListener('load', () => {
+            // Nota il punto davanti a /sw.js - è importantissimo!
+            navigator.serviceWorker.register('./sw.js')
+                .then(reg => console.log('App pronta per installazione'))
+                .catch(err => console.log('Errore caricamento:', err));
+        });
     }
 </script>
 </body>
