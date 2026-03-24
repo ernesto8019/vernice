@@ -7,45 +7,32 @@
     <link rel="manifest" href="./manifest.json">
     <meta name="theme-color" content="#00d1b2">
     <style>
-        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; background: #121212; color: white; padding: 15px; margin: 0; text-align: center; }
-        .app-container { max-width: 400px; margin: 20px auto; background: #1e1e1e; padding: 25px; border-radius: 20px; border: 1px solid #333; box-shadow: 0 10px 20px rgba(0,0,0,0.5); }
-        h2 { color: #00d1b2; font-weight: 300; margin-bottom: 20px; }
-
-        /* Selettore Modalità */
-        .mode-selector { display: flex; background: #333; border-radius: 12px; margin-bottom: 25px; padding: 5px; gap: 5px; }
-        .mode-btn { flex: 1; padding: 12px; border: none; background: transparent; color: #888; cursor: pointer; border-radius: 10px; font-weight: bold; font-size: 14px; transition: 0.2s; }
-        .mode-btn.active { background: #00d1b2 !important; color: #121212 !important; }
-
-        label { display: block; margin-top: 15px; color: #888; text-align: left; font-size: 12px; text-transform: uppercase; }
-        input, select { width: 100%; padding: 15px; margin-top: 5px; border-radius: 10px; border: none; background: #333; color: white; box-sizing: border-box; font-size: 16px; outline: none; }
-        
-        .row { display: flex; gap: 10px; }
-        
-        /* Visibilità */
-        .nascosto { display: none !important; }
-        
-        /* Risultato */
-        .result-area { margin-top: 30px; background: linear-gradient(135deg, #00d1b2, #009e86); color: #121212; padding: 20px; border-radius: 15px; }
-        .result-val { font-size: 2.5em; font-weight: bold; display: block; margin-top: 5px; }
-        
-        #installBtn { display: none; width: 100%; padding: 15px; background: #ff9800; border: none; border-radius: 12px; font-weight: bold; margin-bottom: 20px; color: black; }
-        .footer-link { margin-top: 30px; padding-top: 20px; border-top: 1px solid #333; }
-        .footer-link a { color: #00d1b2; text-decoration: none; font-weight: bold; }
+        body { font-family: sans-serif; background: #121212; color: white; padding: 15px; text-align: center; }
+        .container { max-width: 400px; margin: auto; background: #1e1e1e; padding: 20px; border-radius: 20px; border: 1px solid #333; }
+        h2 { color: #00d1b2; margin-bottom: 20px; }
+        .selector { display: flex; background: #333; border-radius: 10px; padding: 5px; margin-bottom: 20px; }
+        .btn { flex: 1; padding: 10px; border: none; background: none; color: #888; cursor: pointer; font-weight: bold; border-radius: 8px; }
+        .btn.active { background: #00d1b2; color: #121212; }
+        label { display: block; text-align: left; margin-top: 15px; color: #aaa; font-size: 12px; }
+        input, select { width: 100%; padding: 12px; margin-top: 5px; border-radius: 8px; border: none; background: #333; color: white; box-sizing: border-box; font-size: 16px; }
+        .result-box { margin-top: 25px; background: #00d1b2; color: #121212; padding: 20px; border-radius: 15px; }
+        .result-val { font-size: 2.5em; font-weight: bold; display: block; }
+        .footer { margin-top: 20px; padding-top: 10px; border-top: 1px solid #333; }
+        .footer a { color: #00d1b2; text-decoration: none; font-weight: bold; }
     </style>
 </head>
 <body>
 
-<div class="app-container">
-    <button id="installBtn">📲 INSTALLA APP</button>
+<div class="container">
     <h2>🎨 PaintCalc Pro</h2>
 
-    <div class="mode-selector">
-        <button id="btnDim" class="mode-btn active" onclick="switchMode('dims')">Dimensioni (m)</button>
-        <button id="btnMq" class="mode-btn" onclick="switchMode('mq')">MQ Totali</button>
+    <div class="selector">
+        <button id="b1" class="btn active" onclick="mostra('dims')">Dimensioni</button>
+        <button id="b2" class="btn" onclick="mostra('mq')">MQ Totali</button>
     </div>
 
-    <label>Prodotto:</label>
-    <select id="prod" onchange="calcola()">
+    <label>SISTEMA:</label>
+    <select id="prodotto" onchange="calcola()">
         <optgroup label="EPOFLOOR">
             <option value="0.5">Epofloor 810 (2 kg/mq)</option>
             <option value="2.5">Epofloor 830 (0.4 kg/mq)</option>
@@ -59,27 +46,59 @@
         </optgroup>
     </select>
 
-    <div id="boxDims">
-        <div class="row">
-            <div style="flex:1">
-                <label>Base (m):</label>
-                <input type="number" id="base" placeholder="0" oninput="calcola()">
-            </div>
-            <div style="flex:1">
-                <label>Altezza (m):</label>
-                <input type="number" id="altezza" placeholder="0" oninput="calcola()">
-            </div>
-        </div>
+    <div id="areaDims">
+        <label>BASE (m):</label>
+        <input type="number" id="base" value="0" oninput="calcola()">
+        <label>ALTEZZA (m):</label>
+        <input type="number" id="alt" value="0" oninput="calcola()">
     </div>
 
-    <div id="boxMq" class="nascosto">
-        <label>MQ Totali:</label>
-        <input type="number" id="mqtot" placeholder="es. 100" oninput="calcola()">
+    <div id="areaMq" style="display:none">
+        <label>MQ TOTALI:</label>
+        <input type="number" id="mqtot" value="0" oninput="calcola()">
     </div>
 
-    <label>Mani:</label>
-    <input type="number" id="mani" value="1" min="1" oninput="calcola()">
+    <label>MANI:</label>
+    <input type="number" id="mani" value="1" oninput="calcola()">
 
-    <div class="result-area">
-        <span style="font-size: 12px; text-transform: uppercase; font-weight: bold;">Fabbisogno Totale</span>
-        <span class="result-val
+    <div class="result-box">
+        <span style="font-size: 11px; font-weight: bold;">FABBISOGNO TOTALE</span>
+        <span id="risultato" class="result-val">0.00 KG</span>
+    </div>
+
+    <div class="footer">
+        <a href="https://www.vibacolori.it" target="_blank">WWW.VIBACOLORI.IT</a>
+    </div>
+</div>
+
+<script>
+    var mode = 'dims';
+
+    function mostra(tipo) {
+        mode = tipo;
+        document.getElementById('areaDims').style.display = (tipo === 'dims') ? 'block' : 'none';
+        document.getElementById('areaMq').style.display = (tipo === 'mq') ? 'block' : 'none';
+        document.getElementById('b1').className = (tipo === 'dims') ? 'btn active' : 'btn';
+        document.getElementById('b2').className = (tipo === 'mq') ? 'btn active' : 'btn';
+        calcola();
+    }
+
+    function calcola() {
+        var resa = parseFloat(document.getElementById('prodotto').value);
+        var nmani = parseFloat(document.getElementById('mani').value) || 0;
+        var mq = 0;
+
+        if (mode === 'dims') {
+            var b = parseFloat(document.getElementById('base').value) || 0;
+            var h = parseFloat(document.getElementById('alt').value) || 0;
+            mq = b * h;
+        } else {
+            mq = parseFloat(document.getElementById('mqtot').value) || 0;
+        }
+
+        var res = (mq * nmani) / resa;
+        document.getElementById('risultato').innerText = res.toFixed(2) + " KG";
+    }
+</script>
+</body>
+</html>
