@@ -10,21 +10,24 @@
         body { font-family: sans-serif; background: #121212; color: white; padding: 15px; margin: 0; text-align: center; }
         .app-container { max-width: 400px; margin: 20px auto; background: #1e1e1e; padding: 25px; border-radius: 20px; border: 1px solid #333; box-shadow: 0 10px 20px rgba(0,0,0,0.5); }
         
-        h2 { color: #00d1b2; font-weight: 300; margin-bottom: 25px; }
+        h2 { color: #00d1b2; font-weight: 300; margin-bottom: 20px; }
 
-        .mode-selector { display: flex; background: #333; border-radius: 12px; margin-bottom: 25px; padding: 5px; }
-        .mode-btn { flex: 1; padding: 12px; border: none; background: transparent; color: #888; cursor: pointer; border-radius: 10px; font-weight: bold; transition: 0.3s; }
+        /* Selettore Modalità */
+        .mode-selector { display: flex; background: #333; border-radius: 12px; margin-bottom: 25px; padding: 5px; border: 1px solid #444; }
+        .mode-btn { flex: 1; padding: 12px; border: none; background: transparent; color: #888; cursor: pointer; border-radius: 10px; font-weight: bold; transition: 0.2s; }
         .mode-btn.active { background: #00d1b2; color: #121212; }
 
-        label { display: block; margin-top: 15px; color: #888; text-align: left; font-size: 0.8em; text-transform: uppercase; letter-spacing: 1px; }
-        input, select { width: 100%; padding: 15px; margin-top: 5px; border-radius: 12px; border: none; background: #333; color: white; box-sizing: border-box; font-size: 16px; outline: none; }
-        input:focus { background: #444; border: 1px solid #00d1b2; }
+        label { display: block; margin-top: 15px; color: #888; text-align: left; font-size: 0.75em; text-transform: uppercase; letter-spacing: 1px; }
+        input, select { width: 100%; padding: 15px; margin-top: 5px; border-radius: 10px; border: none; background: #333; color: white; box-sizing: border-box; font-size: 16px; outline: none; }
         
         .row { display: flex; gap: 10px; }
-        .hidden { display: none !important; }
         
-        .result-area { margin-top: 30px; background: linear-gradient(135deg, #00d1b2, #009e86); color: #121212; padding: 25px; border-radius: 18px; }
-        .result-val { font-size: 2.2em; font-weight: bold; display: block; }
+        /* Classi per mostrare/nascondere */
+        .nascosto { display: none !important; }
+        
+        /* Risultato */
+        .result-area { margin-top: 30px; background: linear-gradient(135deg, #00d1b2, #009e86); color: #121212; padding: 20px; border-radius: 15px; box-shadow: 0 5px 15px rgba(0,209,178,0.3); }
+        .result-val { font-size: 2.2em; font-weight: bold; display: block; margin-top: 5px; }
         
         #installBtn { display: none; width: 100%; padding: 15px; background: #ff9800; border: none; border-radius: 12px; font-weight: bold; margin-bottom: 20px; color: black; cursor: pointer; }
 
@@ -40,17 +43,17 @@
     <h2>🎨 PaintCalc Pro</h2>
 
     <div class="mode-selector">
-        <button id="btnDim" class="mode-btn active" onclick="cambiaMode('dims')">Dimensioni (m)</button>
-        <button id="btnMq" class="mode-btn" onclick="cambiaMode('mq')">MQ Totali</button>
+        <button id="btnDim" class="mode-btn active" onclick="switchMode('dims')">Dimensioni (m)</button>
+        <button id="btnMq" class="mode-btn" onclick="switchMode('mq')">MQ Totali</button>
     </div>
 
-    <label>Seleziona Sistema:</label>
-    <select id="prodotto" onchange="eseguiCalcolo()">
-        <optgroup label="Sistemi EPOFLOOR">
+    <label>Sistema:</label>
+    <select id="prod" onchange="calcola()">
+        <optgroup label="EPOFLOOR">
             <option value="0.5">Epofloor 810 (2 kg/mq)</option>
             <option value="2.5">Epofloor 830 (0.4 kg/mq)</option>
         </optgroup>
-        <optgroup label="Sistemi CERAMIFLOOR">
+        <optgroup label="CERAMIFLOOR">
             <option value="4">Ceramifloor 900 (0.25 kg/mq)</option>
             <option value="4">Ceramifloor 910 (0.25 kg/mq)</option>
             <option value="4">Ceramifloor 920 (0.25 kg/mq)</option>
@@ -59,12 +62,84 @@
         </optgroup>
     </select>
 
-    <div id="sezioneDims">
+    <div id="boxDims">
         <div class="row">
             <div style="flex:1">
                 <label>Base (m):</label>
-                <input type="number" id="inputLarg" placeholder="0" oninput="eseguiCalcolo()">
+                <input type="number" id="base" placeholder="0" oninput="calcola()">
             </div>
             <div style="flex:1">
                 <label>Altezza (m):</label>
-                <input type="number" id="inputAlt"
+                <input type="number" id="altezza" placeholder="0" oninput="calcola()">
+            </div>
+        </div>
+    </div>
+
+    <div id="boxMq" class="nascosto">
+        <label>Superficie Totale (mq):</label>
+        <input type="number" id="mqtot" placeholder="es. 100" oninput="calcola()">
+    </div>
+
+    <label>Mani:</label>
+    <input type="number" id="mani" value="1" min="1" oninput="calcola()">
+
+    <div class="result-area">
+        <span style="font-size: 0.8em; text-transform: uppercase; font-weight: bold;">Fabbisogno Totale</span>
+        <span class="result-val" id="resText">0 KG</span>
+    </div>
+
+    <div class="footer-link">
+        <a href="https://www.vibacolori.it" target="_blank">WWW.VIBACOLORI.IT</a>
+    </div>
+</div>
+
+<script>
+    let mode = 'dims';
+
+    function switchMode(m) {
+        mode = m;
+        // Gestione bottoni
+        document.getElementById('btnDim').classList.toggle('active', m === 'dims');
+        document.getElementById('btnMq').classList.toggle('active', m === 'mq');
+        
+        // Gestione visibilità sezioni
+        const boxD = document.getElementById('boxDims');
+        const boxM = document.getElementById('boxMq');
+        
+        if(m === 'dims') {
+            boxD.classList.remove('nascosto');
+            boxM.classList.add('nascosto');
+        } else {
+            boxD.classList.add('nascosto');
+            boxM.classList.remove('nascosto');
+        }
+        calcola();
+    }
+
+    function calcola() {
+        const resa = parseFloat(document.getElementById('prod').value);
+        const nmani = parseFloat(document.getElementById('mani').value) || 1;
+        let mqEffettivi = 0;
+
+        if (mode === 'dims') {
+            const b = parseFloat(document.getElementById('base').value) || 0;
+            const h = parseFloat(document.getElementById('altezza').value) || 0;
+            mqEffettivi = b * h;
+        } else {
+            mqEffettivi = parseFloat(document.getElementById('mqtot').value) || 0;
+        }
+
+        const resDisplay = document.getElementById('resText');
+        if (mqEffettivi > 0) {
+            let kg = (mqEffettivi * nmani) / resa;
+            resDisplay.innerText = kg.toFixed(2) + " KG";
+        } else {
+            resDisplay.innerText = "0 KG";
+        }
+    }
+
+    // PWA Installazione
+    let promptDifferito;
+    window.addEventListener('beforeinstallprompt', (e) => {
+        e.preventDefault();
+        promptDifferito = e;
