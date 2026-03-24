@@ -45,27 +45,27 @@
     </div>
 
     <label id="labelProdotto">SISTEMA / PRODOTTO:</label>
-    <select id="prodotto" onchange="calcola()">
+    <select id="prodotto" onchange="gestisciCampi()">
         <optgroup label="EPOFLOOR">
-            <option value="0.40" data-unit="KG">Epofloor 810 PRIMER (0.40 kg/mq)</option>
-            <option value="2.00" data-unit="KG">Epofloor 810 MASSETTO (2.00 kg/mq)</option>
-            <option value="0.40" data-unit="KG">Epofloor 830 (0.40 kg/mq)</option>
+            <option value="0.40" data-unit="KG" data-cat="RESINA">Epofloor 810 PRIMER (0.40 kg/mq)</option>
+            <option value="2.00" data-unit="KG" data-cat="RESINA">Epofloor 810 MASSETTO (2.00 kg/mq)</option>
+            <option value="0.40" data-unit="KG" data-cat="RESINA">Epofloor 830 (0.40 kg/mq)</option>
         </optgroup>
         <optgroup label="CERAMIFLOOR">
-            <option value="0.10" data-unit="KG">Ceramifloor 900 PRIMER (0.10 kg/mq)</option>
-            <option value="0.07" data-unit="KG">Ceramifloor 900 ANTIPOLVERE (0.07 kg/mq)</option>
-            <option value="0.30" data-unit="KG">Ceramifloor 910 (0.30 kg/mq)</option>
-            <option value="0.25" data-unit="KG">Ceramifloor 920 (0.25 kg/mq)</option>
-            <option value="0.25" data-unit="KG">Ceramifloor 930 (0.25 kg/mq)</option>
-            <option value="0.25" data-unit="KG">Ceramifloor 940 (0.25 kg/mq)</option>
+            <option value="0.10" data-unit="KG" data-cat="RESINA">Ceramifloor 900 PRIMER (0.10 kg/mq)</option>
+            <option value="0.07" data-unit="KG" data-cat="RESINA">Ceramifloor 900 ANTIPOLVERE (0.07 kg/mq)</option>
+            <option value="0.30" data-unit="KG" data-cat="RESINA">Ceramifloor 910 (0.30 kg/mq)</option>
+            <option value="0.25" data-unit="KG" data-cat="RESINA">Ceramifloor 920 (0.25 kg/mq)</option>
+            <option value="0.25" data-unit="KG" data-cat="RESINA">Ceramifloor 930 (0.25 kg/mq)</option>
+            <option value="0.25" data-unit="KG" data-cat="RESINA">Ceramifloor 940 (0.25 kg/mq)</option>
         </optgroup>
         <optgroup label="EDILIZIA">
-            <option value="0.12" data-unit="LT">Smalto 3 Archi (0.12 lt/mq)</option>
-            <option value="0.14" data-unit="LT">Trasp. Eko (0.14 lt/mq)</option>
-            <option value="0.14" data-unit="LT">Trasp. Fiorella (0.14 lt/mq)</option>
-            <option value="0.14" data-unit="LT">Lav. Int. Bravo (0.14 lt/mq)</option>
-            <option value="0.14" data-unit="LT">Lav. Est. Bellissima (0.14 lt/mq)</option>
-            <option value="0.30" data-unit="KG">Murosil (0.30 kg/mq)</option>
+            <option value="0.12" data-unit="LT" data-cat="EDILIZIA">Smalto 3 Archi (0.12 lt/mq)</option>
+            <option value="0.10" data-unit="LT" data-cat="EDILIZIA">Trasp. Eko (0.10 lt/mq)</option>
+            <option value="0.10" data-unit="LT" data-cat="EDILIZIA">Trasp. Fiorella (0.10 lt/mq)</option>
+            <option value="0.14" data-unit="LT" data-cat="EDILIZIA">Lav. Int. Bravo (0.14 lt/mq)</option>
+            <option value="0.14" data-unit="LT" data-cat="EDILIZIA">Lav. Est. Bellissima (0.14 lt/mq)</option>
+            <option value="0.30" data-unit="KG" data-cat="EDILIZIA">Murosil (0.30 kg/mq)</option>
         </optgroup>
     </select>
 
@@ -94,8 +94,10 @@
         <input type="number" id="mqtot" placeholder="0" inputmode="decimal" oninput="calcola()">
     </div>
 
-    <label>MANI:</label>
-    <input type="number" id="mani" value="1" min="1" inputmode="numeric" oninput="calcola()">
+    <div id="boxMani" class="hidden">
+        <label>MANI:</label>
+        <input type="number" id="mani" value="1" min="1" inputmode="numeric" oninput="calcola()">
+    </div>
 
     <div class="result-box">
         <span style="font-size: 10px; font-weight: bold; text-transform: uppercase;">Fabbisogno Totale</span>
@@ -120,6 +122,23 @@
         calcola();
     }
 
+    // Nuova funzione per gestire la visibilità del campo MANI e ricalcolare
+    function gestisciCampi() {
+        var selectProd = document.getElementById('prodotto');
+        var selectedOption = selectProd.options[selectProd.selectedIndex];
+        var categoria = selectedOption.getAttribute('data-cat');
+        var isCustom = document.getElementById('flagResa').checked;
+
+        // Mostra MANI solo se è EDILIZIA e non siamo in modalità manuale
+        if (categoria === 'EDILIZIA' && !isCustom) {
+            document.getElementById('boxMani').classList.remove('hidden');
+        } else {
+            document.getElementById('boxMani').classList.add('hidden');
+            document.getElementById('mani').value = 1; // Resetta a 1 se nascosto
+        }
+        calcola();
+    }
+
     function toggleResa() {
         var isCustom = document.getElementById('flagResa').checked;
         var box = document.getElementById('customResaBox');
@@ -133,14 +152,14 @@
             sel.disabled = false;
             sel.style.opacity = "1";
         }
-        calcola();
+        gestisciCampi(); // Aggiorna anche la visibilità del campo mani
     }
 
     function calcola() {
         var isCustom = document.getElementById('flagResa').checked;
         var selectProd = document.getElementById('prodotto');
         var consumoMq;
-        var unita = "KG"; // Default
+        var unita = "KG";
         
         var selectedOption = selectProd.options[selectProd.selectedIndex];
         var nomeProdotto = selectedOption.text;
@@ -154,7 +173,7 @@
             unita = selectedOption.getAttribute('data-unit');
         }
 
-        var nmani = parseFloat(document.getElementById('mani').value) || 0;
+        var nmani = parseFloat(document.getElementById('mani').value) || 1;
         var mq = 0;
 
         if (mode === 'dims') {
@@ -177,6 +196,9 @@
             divConf.classList.add('hidden');
         }
     }
+
+    // Avvio iniziale per impostare la visibilità corretta
+    window.onload = gestisciCampi;
 </script>
 </body>
 </html>
